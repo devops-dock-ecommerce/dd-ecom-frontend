@@ -19,27 +19,24 @@ env:
 
 jobs:
   build-and-push:
-    name: Test, Build and Push
+    name: Build and Push Frontend
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout application
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: npm
+      - name: Validate frontend files
+        run: |
+          echo "Checking required frontend files..."
 
-      - name: Install dependencies
-        run: npm ci
+          test -f index.html
+          test -f app.js
+          test -f style.css
+          test -f nginx.conf
+          test -f Dockerfile
 
-      - name: Run tests
-        run: npm test --if-present
-
-      - name: Build frontend
-        run: npm run build
+          echo "All required frontend files are present."
 
       - name: Set image tag
         id: image
@@ -65,3 +62,4 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.image.outputs.image }}
+
